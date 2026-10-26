@@ -1,0 +1,9 @@
+config/config.local.php
+uploads/*
+!uploads/.gitkeep
+!uploads/.htaccess
+*.sql
+!sql/schema.sql
+*.log
+.vscode/
+.idea/
