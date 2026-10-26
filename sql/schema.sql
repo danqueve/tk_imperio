@@ -78,6 +78,16 @@ CREATE TABLE IF NOT EXISTS tk_ticket_eventos (
     CONSTRAINT fk_e_usuario FOREIGN KEY (usuario_id) REFERENCES tk_usuarios (id)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS tk_login_intentos (
+    id        INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    usuario   VARCHAR(60) NOT NULL,
+    ip        VARCHAR(45) NOT NULL,
+    creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_usuario (usuario, creado_en),
+    KEY idx_ip (ip, creado_en)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS tk_config (
     clave VARCHAR(60) NOT NULL,
     valor TEXT NOT NULL,

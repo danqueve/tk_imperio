@@ -1,14 +1,23 @@
 <?php
 declare(strict_types=1);
 
+/** [archivo, etiqueta, ícono, roles permitidos] */
 const NAV_ITEMS = [
-    ['bandeja.php',      'Bandeja',  'bi-inbox'],
-    ['ticket_nuevo.php', 'Nuevo',    'bi-plus-circle'],
-    ['historial.php',    'Historial', 'bi-clock-history'],
-    ['usuarios.php',     'Usuarios', 'bi-people'],
+    ['bandeja.php',      'Bandeja',   'bi-inbox',         ['admin', 'supervisor', 'usuario']],
+    ['ticket_nuevo.php', 'Nuevo',     'bi-plus-circle',   ['admin', 'supervisor', 'usuario']],
+    ['historial.php',    'Historial', 'bi-clock-history', ['admin', 'supervisor']],
+    ['usuarios.php',     'Usuarios',  'bi-people',        ['admin']],
 ];
 
-function layout_inicio(string $titulo, string $activo = ''): void
+function nav_visible(?array $u): array
+{
+    if (!$u) {
+        return [];
+    }
+    return array_values(array_filter(NAV_ITEMS, fn($i) => in_array($u['rol'], $i[3], true)));
+}
+
+function layout_inicio(string $titulo, string $activo = '', ?array $u = null): void
 {
     $empresa = 'TK Imperio';
     ?>
@@ -27,7 +36,7 @@ function layout_inicio(string $titulo, string $activo = ''): void
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="<?= e(url('bandeja.php')) ?>"><?= e($empresa) ?></a>
         <ul class="navbar-nav me-auto">
-            <?php foreach (NAV_ITEMS as [$href, $label, $icon]): ?>
+            <?php foreach (nav_visible($u) as [$href, $label, $icon]): ?>
                 <li class="nav-item">
                     <a class="nav-link <?= $activo === $href ? 'active' : '' ?>" href="<?= e(url($href)) ?>">
                         <i class="bi <?= $icon ?>"></i> <?= e($label) ?>
@@ -35,21 +44,37 @@ function layout_inicio(string $titulo, string $activo = ''): void
                 </li>
             <?php endforeach; ?>
         </ul>
+        <?php if ($u): ?>
+            <form method="post" action="<?= e(url('logout.php')) ?>" class="d-flex align-items-center gap-2 text-white">
+                <?= csrf_campo() ?>
+                <span class="small"><i class="bi bi-person-circle"></i> <?= e($u['nombre']) ?> · <?= e($u['rol']) ?></span>
+                <button class="btn btn-sm btn-outline-light">Salir</button>
+            </form>
+        <?php endif; ?>
     </div>
 </nav>
-<header class="tk-mobilebar d-md-none bg-dark text-white px-3 py-2 fw-bold"><?= e($empresa) ?></header>
+<header class="tk-mobilebar d-md-none bg-dark text-white px-3 py-2 d-flex justify-content-between align-items-center">
+    <strong><?= e($empresa) ?></strong>
+    <?php if ($u): ?>
+        <form method="post" action="<?= e(url('logout.php')) ?>" class="m-0">
+            <?= csrf_campo() ?>
+            <button class="btn btn-sm btn-outline-light">Salir</button>
+        </form>
+    <?php endif; ?>
+</header>
 
 <main class="container-fluid py-3 tk-main">
 <?php
+    flash_mostrar();
 }
 
-function layout_fin(string $activo = ''): void
+function layout_fin(string $activo = '', ?array $u = null): void
 {
     ?>
 </main>
 
 <nav class="tk-bottombar d-md-none bg-dark">
-    <?php foreach (NAV_ITEMS as [$href, $label, $icon]): ?>
+    <?php foreach (nav_visible($u) as [$href, $label, $icon]): ?>
         <a href="<?= e(url($href)) ?>" class="<?= $activo === $href ? 'active' : '' ?>">
             <i class="bi <?= $icon ?>"></i>
             <span><?= e($label) ?></span>
