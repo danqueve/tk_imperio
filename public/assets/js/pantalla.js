@@ -110,8 +110,8 @@
         }
         const fragment = document.createDocumentFragment();
         datos.forEach(function (c) {
-            const col = el('section', 'col');
-            col.style.setProperty('--c', c.color);
+            // Color fijo por usuario (según su id) para que no cambie entre actualizaciones.
+            const col = el('section', 'col ' + (c.id === 0 ? 'sin' : 'p' + (c.id % 8)));
             const h = el('h2');
             const nom = el('span', 'nom');
             nom.appendChild(el('span', 'ini', iniciales(c.nombre)));

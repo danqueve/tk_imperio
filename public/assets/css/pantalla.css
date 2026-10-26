@@ -64,18 +64,27 @@ body {
     overflow-x: auto; scroll-snap-type: x mandatory;
 }
 .col {
-    --c: #9C98B5;
+    /* Cada columna tiene su propio color pastel: fondo (--bg), encabezado (--hd) y texto (--ink-c). */
+    --bg: #F6F5FA; --hd: #E8E6F1; --ink-c: #4A4762;
     flex: 1 1 0; min-width: 16em; display: flex; flex-direction: column; min-height: 0;
-    background: var(--surface); border-radius: 1.2em; overflow: hidden;
+    background: var(--bg); border-radius: 1.2em; overflow: hidden;
     box-shadow: 0 1px 2px rgba(36, 34, 58, .05);
     scroll-snap-align: start;
 }
+.col.p0 { --bg: #F3F0FF; --hd: #E2DCFF; --ink-c: #3F3299; }  /* lavanda */
+.col.p1 { --bg: #EEF5FF; --hd: #D6E6FF; --ink-c: #1E4F8F; }  /* cielo */
+.col.p2 { --bg: #EDFAF3; --hd: #D2F1E1; --ink-c: #1B6B47; }  /* menta */
+.col.p3 { --bg: #FFF4EA; --hd: #FFE2C7; --ink-c: #8A4B0F; }  /* durazno */
+.col.p4 { --bg: #FFF0F2; --hd: #FFD9DF; --ink-c: #A0283B; }  /* rosa */
+.col.p5 { --bg: #FFF9E6; --hd: #FFEDB8; --ink-c: #7A5600; }  /* manteca */
+.col.p6 { --bg: #EAF8F8; --hd: #CCEDEE; --ink-c: #11615F; }  /* agua */
+.col.p7 { --bg: #F8EEFF; --hd: #ECD9FF; --ink-c: #6A2E9E; }  /* lila */
+.col.sin { --bg: #F6F5FA; --hd: #E8E6F1; --ink-c: #4A4762; } /* sin asignar: gris */
 .col h2 {
     margin: 0; padding: .8em .95em;
     display: flex; justify-content: space-between; align-items: center; gap: .5em;
     font-size: 1.05em; font-weight: 800;
-    background: #EFEDF6;
-    background: color-mix(in srgb, var(--c) 20%, #fff);
+    background: var(--hd); color: var(--ink-c);
 }
 .col h2 .nom { display: flex; align-items: center; gap: .55em; min-width: 0; }
 .col h2 .nom span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -83,16 +92,16 @@ body {
     width: 1.9em; height: 1.9em; border-radius: 50%; flex: none;
     display: inline-flex; align-items: center; justify-content: center;
     background: #fff; font-size: .75em; font-weight: 800;
-    color: var(--ink-2);
-    color: color-mix(in srgb, var(--c) 70%, #1a1830);
+    color: var(--ink-c);
 }
-.col h2 .n { background: rgba(255, 255, 255, .85); border-radius: 1em; padding: .05em .65em; font-size: .9em; }
+.col h2 .n { background: rgba(255, 255, 255, .85); color: var(--ink-c); border-radius: 1em; padding: .05em .65em; font-size: .9em; }
 
 .tarjetas { flex: 1; min-height: 0; overflow: hidden; padding: .75em; display: flex; flex-direction: column; gap: .55em; }
 
 .card {
     background: var(--surface); border-radius: .85em; padding: .65em .8em;
-    border: 2px solid #ECEBF3; flex: none;
+    border: 2px solid rgba(255, 255, 255, 0); flex: none;
+    box-shadow: 0 1px 2px rgba(36, 34, 58, .06);
 }
 .card.proceso { background: var(--sky-card); border-color: var(--sky-line); }
 .card.alta { border-color: var(--rose-line); }

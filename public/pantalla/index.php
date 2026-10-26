@@ -26,7 +26,7 @@ $empresa = $p->config('empresa', 'TK Imperio');
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link href="<?= e(url('assets/css/pantalla.css')) ?>?v=2" rel="stylesheet">
+    <link href="<?= e(url('assets/css/pantalla.css')) ?>?v=3" rel="stylesheet">
 </head>
 <body>
 <header id="cab">
@@ -53,6 +53,6 @@ window.PANTALLA = {
     recargaHora: 6
 };
 </script>
-<script src="<?= e(url('assets/js/pantalla.js')) ?>?v=2"></script>
+<script src="<?= e(url('assets/js/pantalla.js')) ?>?v=3"></script>
 </body>
 </html>
