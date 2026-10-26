@@ -155,6 +155,124 @@ final class TicketService
         return $st->fetchAll();
     }
 
+    /* ---------- Flujo de estados ---------- */
+
+    private const ABIERTOS = ['pendiente', 'en_proceso'];
+
+    /** Acciones que el actor puede hacer sobre el ticket en su estado actual. */
+    public function acciones(array $t, array $actor): array
+    {
+        $a = [];
+        $super = es_supervisor($actor);
+        $suyo = (int) $t['asignado_a'] === (int) $actor['id'];
+        if ($t['estado'] === 'pendiente' && ($super || $suyo)) {
+            $a[] = 'tomar';
+        }
+        if ($t['estado'] === 'en_proceso' && ($super || $suyo)) {
+            $a[] = 'resolver';
+        }
+        if ($super && in_array($t['estado'], self::ABIERTOS, true)) {
+            $a[] = 'reasignar';
+            $a[] = 'anular';
+        }
+        return $a;
+    }
+
+    public function tomar(int $id, array $actor): void
+    {
+        $this->transaccion($id, $actor, 'tomar', function (array $t) use ($actor) {
+            $this->actualizar($id = (int) $t['id'], 'pendiente',
+                "estado = 'en_proceso', tomado_en = NOW(), asignado_a = COALESCE(asignado_a, ?)", [$actor['id']]);
+            $this->evento($id, (int) $actor['id'], 'tomado', null);
+        });
+    }
+
+    public function resolver(int $id, string $nota, array $actor): void
+    {
+        $nota = trim($nota);
+        if ($nota === '') {
+            throw new DomainException('La nota de solución es obligatoria.');
+        }
+        $this->transaccion($id, $actor, 'resolver', function (array $t) use ($nota, $actor) {
+            $id = (int) $t['id'];
+            $this->actualizar($id, 'en_proceso',
+                "estado = 'resuelto', resuelto_en = NOW(), resuelto_por = ?, nota_resolucion = ?", [$actor['id'], $nota]);
+            $this->evento($id, (int) $actor['id'], 'resuelto', $nota);
+        });
+    }
+
+    /** $nuevo = null deja el ticket sin asignar. */
+    public function reasignar(int $id, ?int $nuevo, array $actor): void
+    {
+        $nombreNuevo = 'Sin asignar';
+        if ($nuevo !== null) {
+            $st = $this->db->prepare('SELECT nombre FROM tk_usuarios WHERE id = ? AND activo = 1');
+            $st->execute([$nuevo]);
+            $nombreNuevo = $st->fetchColumn() ?: throw new DomainException('El usuario no existe o está inactivo.');
+        }
+        $this->transaccion($id, $actor, 'reasignar', function (array $t) use ($nuevo, $nombreNuevo, $actor) {
+            $id = (int) $t['id'];
+            if ($t['estado'] === 'pendiente' && ($t['asignado_a'] === null ? null : (int) $t['asignado_a']) === $nuevo) {
+                throw new DomainException('El ticket ya está asignado a esa persona.');
+            }
+            $antes = $t['asignado_a'] ? $this->nombreUsuario((int) $t['asignado_a']) : 'Sin asignar';
+            $this->actualizar($id, $t['estado'], "estado = 'pendiente', tomado_en = NULL, asignado_a = ?", [$nuevo]);
+            $this->evento($id, (int) $actor['id'], 'reasignado', $antes . ' → ' . $nombreNuevo);
+        });
+    }
+
+    public function anular(int $id, string $motivo, array $actor): void
+    {
+        $motivo = trim($motivo);
+        if ($motivo === '') {
+            throw new DomainException('Indicá el motivo de la anulación.');
+        }
+        $this->transaccion($id, $actor, 'anular', function (array $t) use ($motivo, $actor) {
+            $id = (int) $t['id'];
+            $this->actualizar($id, $t['estado'], "estado = 'anulado', resuelto_en = NOW()", []);
+            $this->evento($id, (int) $actor['id'], 'anulado', $motivo);
+        });
+    }
+
+    /** Bloquea la fila, verifica que el actor pueda hacer la acción y ejecuta el cambio atómicamente. */
+    private function transaccion(int $id, array $actor, string $accion, callable $cambio): void
+    {
+        $this->db->beginTransaction();
+        try {
+            $st = $this->db->prepare('SELECT * FROM tk_tickets WHERE id = ? FOR UPDATE');
+            $st->execute([$id]);
+            $t = $st->fetch();
+            if (!$t) {
+                throw new DomainException('El ticket no existe.');
+            }
+            if (!in_array($accion, $this->acciones($t, $actor), true)) {
+                throw new DomainException('No podés hacer esa acción sobre este ticket en su estado actual.');
+            }
+            $cambio($t);
+            $this->db->commit();
+        } catch (Throwable $ex) {
+            $this->db->rollBack();
+            throw $ex;
+        }
+    }
+
+    /** UPDATE condicionado al estado esperado: evita pisar un cambio simultáneo. */
+    private function actualizar(int $id, string $estadoEsperado, string $set, array $params): void
+    {
+        $st = $this->db->prepare("UPDATE tk_tickets SET $set WHERE id = ? AND estado = ?");
+        $st->execute([...$params, $id, $estadoEsperado]);
+        if ($st->rowCount() !== 1) {
+            throw new DomainException('El ticket cambió mientras lo editabas. Recargá la página.');
+        }
+    }
+
+    private function nombreUsuario(int $id): string
+    {
+        $st = $this->db->prepare('SELECT nombre FROM tk_usuarios WHERE id = ?');
+        $st->execute([$id]);
+        return (string) ($st->fetchColumn() ?: '—');
+    }
+
     private function fecha(string $s): ?string
     {
         $d = DateTime::createFromFormat('Y-m-d', $s);
