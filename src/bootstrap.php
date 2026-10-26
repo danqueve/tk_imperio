@@ -40,16 +40,50 @@ function hace(string $fecha): string
 }
 
 const ESTADOS = [
-    'pendiente'  => ['Pendiente', 'warning'],
-    'en_proceso' => ['En proceso', 'primary'],
-    'resuelto'   => ['Resuelto', 'success'],
-    'anulado'    => ['Anulado', 'secondary'],
+    'pendiente'  => 'Pendiente',
+    'en_proceso' => 'En proceso',
+    'resuelto'   => 'Resuelto',
+    'anulado'    => 'Anulado',
 ];
 
+/** Chip pastel del estado (clases en assets/css/app.css). */
 function badge_estado(string $estado): string
 {
-    [$txt, $color] = ESTADOS[$estado] ?? [$estado, 'secondary'];
-    return '<span class="badge text-bg-' . $color . '">' . e($txt) . '</span>';
+    $txt = ESTADOS[$estado] ?? $estado;
+    $cls = isset(ESTADOS[$estado]) ? $estado : 'neutro';
+    return '<span class="tk-chip tk-chip-' . $cls . '">' . e($txt) . '</span>';
+}
+
+/** Chip genérico: tipo = alta | tarea | neutro | resuelto … */
+function chip(string $tipo, string $texto, bool $chico = false): string
+{
+    return '<span class="tk-chip tk-chip-' . e($tipo) . ($chico ? ' tk-chip-sm' : '') . '">' . e($texto) . '</span>';
+}
+
+/** Iniciales para el avatar: "Juan Pablo Bicego" → "JP". */
+function iniciales(?string $nombre): string
+{
+    $partes = preg_split('/\s+/u', trim((string) $nombre), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $ini = '';
+    foreach (array_slice($partes, 0, 2) as $p) {
+        $ini .= mb_strtoupper(mb_substr($p, 0, 1));
+    }
+    return $ini !== '' ? $ini : '?';
+}
+
+/** Color de usuario seguro para usar dentro de style="--c: …". */
+function color_seguro(?string $c, string $defecto = '#B9B6CC'): string
+{
+    return is_string($c) && preg_match('/^#[0-9a-fA-F]{6}$/', $c) ? $c : $defecto;
+}
+
+/** Persona asignada con su punto de color, o "Sin asignar". */
+function persona(?string $nombre, ?string $color = null): string
+{
+    if ($nombre === null || $nombre === '') {
+        return '<span class="tk-sin">Sin asignar</span>';
+    }
+    return '<span class="tk-persona"><span class="tk-dot" style="--c:' . color_seguro($color) . '"></span>' . e($nombre) . '</span>';
 }
 
 function crear_pdo(array $c): PDO

@@ -57,58 +57,70 @@ $vencido = $t['compromiso_fecha'] && strtotime($t['compromiso_fecha']) < time()
 
 layout_inicio('#' . $t['id'], 'bandeja.php', $u);
 ?>
-<div class="mb-3"><a href="<?= e(url('bandeja.php')) ?>" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Bandeja</a></div>
+<a href="<?= e(url('bandeja.php')) ?>" class="tk-back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Volver a la bandeja</a>
 
-<div class="row g-3">
-    <div class="col-lg-7">
-        <div class="card card-body">
-            <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
-                <span class="badge text-bg-dark"><?= $t['tipo'] === 'tarea' ? 'Tarea del día' : 'Ticket' ?> #<?= (int) $t['id'] ?></span>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <section class="card card-body gap-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <?= chip('neutro', ($t['tipo'] === 'tarea' ? 'Tarea del día' : 'Ticket') . ' #' . (int) $t['id']) ?>
                 <?= badge_estado($t['estado']) ?>
-                <?php if ($t['prioridad'] === 'alta'): ?><span class="badge text-bg-danger">Prioridad alta</span><?php endif; ?>
+                <?php if ($t['prioridad'] === 'alta'): ?><?= chip('alta', 'Prioridad alta') ?><?php endif; ?>
             </div>
-            <h1 class="h4"><?= e($titulo) ?></h1>
-            <dl class="row mb-0">
+            <h1 class="h3 m-0"><?= e($titulo) ?></h1>
+            <dl class="tk-datos">
                 <?php if ($t['tipo'] === 'ticket'): ?>
-                    <dt class="col-sm-4">DNI</dt><dd class="col-sm-8"><?= e($t['dni']) ?></dd>
-                    <dt class="col-sm-4">Cliente SAS</dt><dd class="col-sm-8"><?= $t['sas_cliente_id'] ? '#' . (int) $t['sas_cliente_id'] : 'No está en SAS' ?></dd>
+                    <div class="tk-dato"><dt>DNI</dt><dd class="tk-num"><?= e($t['dni']) ?></dd></div>
+                    <div class="tk-dato"><dt>Cliente SAS</dt><dd><?= $t['sas_cliente_id'] ? '#' . (int) $t['sas_cliente_id'] : 'No está en SAS' ?></dd></div>
                 <?php else: ?>
-                    <dt class="col-sm-4">Fecha</dt><dd class="col-sm-8"><?= e(date('d/m/Y', strtotime($t['fecha_tarea']))) ?></dd>
+                    <div class="tk-dato"><dt>Fecha</dt><dd><?= e(date('d/m/Y', strtotime($t['fecha_tarea']))) ?></dd></div>
                     <?php if ($t['compromiso_fecha']): ?>
-                        <dt class="col-sm-4">Compromiso</dt>
-                        <dd class="col-sm-8 <?= $vencido ? 'text-danger fw-bold' : '' ?>">
-                            <?= e(date('d/m/Y H:i', strtotime($t['compromiso_fecha']))) ?>
-                            <?= $t['compromiso_detalle'] ? '· ' . e($t['compromiso_detalle']) : '' ?>
-                            <?= $vencido ? '(vencido)' : '' ?>
-                        </dd>
+                        <div class="tk-dato <?= $vencido ? 'venc' : '' ?>"><dt>Compromiso<?= $vencido ? ' · vencido' : '' ?></dt>
+                            <dd><?= e(date('d/m/Y H:i', strtotime($t['compromiso_fecha']))) ?>
+                                <?= $t['compromiso_detalle'] ? '· ' . e($t['compromiso_detalle']) : '' ?></dd></div>
                     <?php endif; ?>
                 <?php endif; ?>
-                <dt class="col-sm-4">Asignado a</dt><dd class="col-sm-8"><?= $t['asignado_nombre'] ? e($t['asignado_nombre']) : '<em>Sin asignar</em>' ?></dd>
-                <dt class="col-sm-4">Cargado por</dt><dd class="col-sm-8"><?= e($t['creador_nombre']) ?> · <?= e(date('d/m/Y H:i', strtotime($t['creado_en']))) ?> (<?= e(hace($t['creado_en'])) ?>)</dd>
+                <div class="tk-dato"><dt>Asignado a</dt><dd><?= persona($t['asignado_nombre'], $t['asignado_color'] ?? null) ?></dd></div>
+                <div class="tk-dato"><dt>Cargado por</dt><dd><?= e($t['creador_nombre']) ?> · <?= e(date('d/m H:i', strtotime($t['creado_en']))) ?>
+                    <span class="text-muted fw-semibold">(<?= e(hace($t['creado_en'])) ?>)</span></dd></div>
             </dl>
             <?php if ($t['problematica']): ?>
-                <hr><div style="white-space: pre-wrap"><?= e($t['problematica']) ?></div>
+                <div>
+                    <h2 class="tk-section-title"><?= $t['tipo'] === 'tarea' ? 'Descripción' : 'Problemática' ?></h2>
+                    <p class="tk-texto"><?= e($t['problematica']) ?></p>
+                </div>
             <?php endif; ?>
             <?php if ($t['nota_resolucion']): ?>
-                <hr><strong>Resolución</strong> (<?= e((string) $t['resolvio_nombre']) ?>)
-                <div style="white-space: pre-wrap"><?= e($t['nota_resolucion']) ?></div>
+                <div class="tk-resolucion">
+                    <h2 class="tk-section-title"><?= $t['estado'] === 'anulado' ? 'Motivo de anulación' : 'Resolución' ?> · <?= e((string) $t['resolvio_nombre']) ?></h2>
+                    <p class="tk-texto"><?= e($t['nota_resolucion']) ?></p>
+                </div>
             <?php endif; ?>
-        </div>
+            <?php if ($imagenes): ?>
+                <div class="tk-fotos">
+                    <?php foreach ($imagenes as $im): $src = url('imagen.php?id=' . (int) $im['id']); ?>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#visor" data-src="<?= e($src) ?>" aria-label="Ampliar imagen <?= (int) $im['orden'] ?>">
+                            <img src="<?= e($src) ?>" alt="Imagen <?= (int) $im['orden'] ?>" loading="lazy">
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </section>
 
         <?php if ($acciones): ?>
         <div class="d-flex flex-wrap gap-2 mt-3">
             <?php if (in_array('tomar', $acciones, true)): ?>
                 <form method="post" class="m-0"><?= csrf_campo() ?><input type="hidden" name="accion" value="tomar">
-                    <button class="btn btn-primary btn-lg"><i class="bi bi-hand-index-thumb"></i> Tomar</button></form>
+                    <button class="btn btn-primary btn-lg"><i class="bi bi-hand-index-thumb" aria-hidden="true"></i> Tomar</button></form>
             <?php endif; ?>
             <?php if (in_array('resolver', $acciones, true)): ?>
-                <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#m-resolver"><i class="bi bi-check-circle"></i> Resolver</button>
+                <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#m-resolver"><i class="bi bi-check-lg" aria-hidden="true"></i> Resolver</button>
             <?php endif; ?>
             <?php if (in_array('reasignar', $acciones, true)): ?>
-                <button class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#m-reasignar"><i class="bi bi-arrow-left-right"></i> Reasignar</button>
+                <button class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#m-reasignar"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Reasignar</button>
             <?php endif; ?>
             <?php if (in_array('anular', $acciones, true)): ?>
-                <button class="btn btn-outline-danger btn-lg" data-bs-toggle="modal" data-bs-target="#m-anular"><i class="bi bi-x-circle"></i> Anular</button>
+                <button class="btn btn-outline-danger btn-lg" data-bs-toggle="modal" data-bs-target="#m-anular"><i class="bi bi-x-circle" aria-hidden="true"></i> Anular</button>
             <?php endif; ?>
         </div>
 
@@ -150,14 +162,6 @@ layout_inicio('#' . $t['id'], 'bandeja.php', $u);
         <?php endif; ?>
 
         <?php if ($imagenes): ?>
-        <div class="d-flex gap-2 flex-wrap mt-3">
-            <?php foreach ($imagenes as $im): $src = url('imagen.php?id=' . (int) $im['id']); ?>
-                <a href="#" data-bs-toggle="modal" data-bs-target="#visor" data-src="<?= e($src) ?>">
-                    <img src="<?= e($src) ?>" alt="Imagen <?= (int) $im['orden'] ?>" class="rounded border"
-                         style="height:110px;width:110px;object-fit:cover" loading="lazy">
-                </a>
-            <?php endforeach; ?>
-        </div>
         <div class="modal fade" id="visor" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content">
                 <div class="modal-body p-1 text-center"><img id="visor-img" class="img-fluid" alt="Imagen ampliada"></div>
@@ -171,19 +175,20 @@ layout_inicio('#' . $t['id'], 'bandeja.php', $u);
         <?php endif; ?>
     </div>
 
-    <div class="col-lg-5">
-        <div class="card card-body">
-            <h2 class="h6">Historial</h2>
-            <ul class="list-unstyled mb-0 small">
-                <?php foreach ($eventos as $ev): ?>
-                    <li class="mb-2">
+    <div class="col-lg-4">
+        <aside class="card card-body">
+            <h2 class="h5 mb-3">Historial</h2>
+            <ol class="tk-timeline">
+                <?php foreach (array_reverse($eventos) as $ev): ?>
+                    <li>
+                        <span class="pt <?= e(strtolower((string) $ev['accion'])) ?>" aria-hidden="true"></span>
                         <strong><?= e(ucfirst($ev['accion'])) ?></strong> · <?= e($ev['usuario_nombre']) ?>
-                        <span class="text-muted">· <?= e(date('d/m/Y H:i', strtotime($ev['creado_en']))) ?></span>
-                        <?php if ($ev['detalle']): ?><div><?= e($ev['detalle']) ?></div><?php endif; ?>
+                        <div class="cuando"><?= e(date('d/m/Y H:i', strtotime($ev['creado_en']))) ?></div>
+                        <?php if ($ev['detalle']): ?><div class="det"><?= e($ev['detalle']) ?></div><?php endif; ?>
                     </li>
                 <?php endforeach; ?>
-            </ul>
-        </div>
+            </ol>
+        </aside>
     </div>
 </div>
 <?php layout_fin('bandeja.php', $u);

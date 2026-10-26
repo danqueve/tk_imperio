@@ -92,7 +92,7 @@ final class TicketService
     public function obtener(int $id): ?array
     {
         $st = $this->db->prepare(
-            'SELECT t.*, ua.nombre AS asignado_nombre, uc.nombre AS creador_nombre, ur.nombre AS resolvio_nombre
+            'SELECT t.*, ua.nombre AS asignado_nombre, ua.color AS asignado_color, uc.nombre AS creador_nombre, ur.nombre AS resolvio_nombre
              FROM tk_tickets t
              LEFT JOIN tk_usuarios ua ON ua.id = t.asignado_a
              JOIN tk_usuarios uc ON uc.id = t.creado_por
@@ -146,7 +146,7 @@ final class TicketService
         }
 
         $st = $this->db->prepare(
-            'SELECT t.*, ua.nombre AS asignado_nombre,
+            'SELECT t.*, ua.nombre AS asignado_nombre, ua.color AS asignado_color,
                     (SELECT COUNT(*) FROM tk_ticket_imagenes i WHERE i.ticket_id = t.id) AS n_imagenes
              FROM tk_tickets t LEFT JOIN tk_usuarios ua ON ua.id = t.asignado_a
              WHERE ' . implode(' AND ', $where) . ' ORDER BY t.creado_en ASC, t.id ASC LIMIT 500'

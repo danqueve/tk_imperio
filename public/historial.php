@@ -50,44 +50,47 @@ $qs = fn(array $extra = []) => http_build_query(array_filter($extra + $f, fn($v)
 
 layout_inicio('Historial', 'historial.php', $u);
 ?>
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h4 m-0">Historial <span class="badge text-bg-secondary"><?= $total ?></span></h1>
-    <a class="btn btn-outline-success" href="?<?= e($qs(['csv' => '1'])) ?>"><i class="bi bi-download"></i> Exportar CSV</a>
+<div class="tk-head">
+    <div>
+        <h1>Historial <span class="tk-count"><?= $total ?></span></h1>
+        <p>Tickets y tareas resueltos o anulados</p>
+    </div>
+    <a class="btn btn-outline-success" href="?<?= e($qs(['csv' => '1'])) ?>"><i class="bi bi-download" aria-hidden="true"></i> Exportar CSV</a>
 </div>
 
-<form method="get" class="card card-body mb-3">
+<form method="get" class="card card-body mb-4">
     <div class="row g-2">
-        <div class="col-12 col-md-4"><label class="form-label small mb-0" for="q">DNI o cliente</label>
+        <div class="col-12 col-md-4"><label class="form-label" for="q">DNI o cliente</label>
             <input class="form-control" id="q" name="q" value="<?= e($f['q']) ?>" placeholder="Buscar…"></div>
         <?php if ($super): ?>
-        <div class="col-6 col-md-2"><label class="form-label small mb-0" for="usuario">Usuario</label>
+        <div class="col-6 col-md-2"><label class="form-label" for="usuario">Usuario</label>
             <select class="form-select" id="usuario" name="usuario"><option value="">Todos</option>
                 <?php foreach ($usuarios as $a): ?>
                     <option value="<?= (int) $a['id'] ?>" <?= $f['usuario'] === (string) $a['id'] ? 'selected' : '' ?>><?= e($a['nombre']) ?></option>
                 <?php endforeach; ?></select></div>
         <?php endif; ?>
-        <div class="col-6 col-md-2"><label class="form-label small mb-0" for="estado">Estado</label>
+        <div class="col-6 col-md-2"><label class="form-label" for="estado">Estado</label>
             <select class="form-select" id="estado" name="estado"><option value="">Resuelto y anulado</option>
                 <option value="resuelto" <?= $f['estado'] === 'resuelto' ? 'selected' : '' ?>>Resuelto</option>
                 <option value="anulado" <?= $f['estado'] === 'anulado' ? 'selected' : '' ?>>Anulado</option></select></div>
-        <div class="col-6 col-md-2"><label class="form-label small mb-0" for="tipo">Tipo</label>
+        <div class="col-6 col-md-2"><label class="form-label" for="tipo">Tipo</label>
             <select class="form-select" id="tipo" name="tipo"><option value="">Todos</option>
                 <option value="ticket" <?= $f['tipo'] === 'ticket' ? 'selected' : '' ?>>Tickets</option>
                 <option value="tarea" <?= $f['tipo'] === 'tarea' ? 'selected' : '' ?>>Tareas</option></select></div>
-        <div class="col-6 col-md-2"><label class="form-label small mb-0" for="desde">Cerrado desde</label>
+        <div class="col-6 col-md-2"><label class="form-label" for="desde">Cerrado desde</label>
             <input class="form-control" type="date" id="desde" name="desde" value="<?= e($f['desde']) ?>"></div>
-        <div class="col-6 col-md-2"><label class="form-label small mb-0" for="hasta">Hasta</label>
+        <div class="col-6 col-md-2"><label class="form-label" for="hasta">Hasta</label>
             <input class="form-control" type="date" id="hasta" name="hasta" value="<?= e($f['hasta']) ?>"></div>
         <div class="col-12 col-md-auto d-flex align-items-end gap-2">
-            <button class="btn btn-primary">Filtrar</button>
+            <button class="btn btn-primary"><i class="bi bi-funnel" aria-hidden="true"></i> Filtrar</button>
             <a class="btn btn-link" href="<?= e(url('historial.php')) ?>">Limpiar</a></div>
     </div>
 </form>
 
 <?php if ($promedios): ?>
-<div class="card card-body mb-3">
-    <h2 class="h6">Tiempo promedio de resolución <span class="text-muted fw-normal small">(solo resueltos del filtro)</span></h2>
-    <div class="table-responsive">
+<div class="tk-table-wrap mb-4">
+    <h2 class="h6 px-4 pt-3 mb-2">Tiempo promedio de resolución <span class="text-muted fw-normal small">(solo resueltos del filtro)</span></h2>
+    <div>
     <table class="table table-sm mb-0">
         <thead><tr><th>Resuelto por</th><th class="text-end">Resueltos</th><th class="text-end">Desde la carga</th><th class="text-end">Desde que lo tomó</th></tr></thead>
         <tbody>
@@ -103,18 +106,22 @@ layout_inicio('Historial', 'historial.php', $u);
 <?php endif; ?>
 
 <?php if (!$filas): ?>
-    <div class="alert alert-light border">No hay resultados con esos filtros.</div>
+    <div class="tk-empty">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <strong>Sin resultados</strong>
+        <p>Probá con otros filtros o limpiá la búsqueda.</p>
+    </div>
 <?php else: ?>
-<div class="table-responsive">
-<table class="table table-sm table-hover align-middle bg-white">
+<div class="tk-table-wrap">
+<table class="table table-sm table-hover align-middle">
     <thead><tr><th>#</th><th>Cliente / Tarea</th><th>DNI</th><th>Estado</th><th>Asignado a</th><th>Cerrado</th><th>Tardó</th></tr></thead>
     <tbody>
     <?php foreach ($filas as $t): ?>
         <tr>
-            <td><?= (int) $t['id'] ?></td>
-            <td><a class="text-decoration-none" href="<?= e(url('ticket.php?id=' . (int) $t['id'])) ?>">
+            <td class="tk-id"><?= (int) $t['id'] ?></td>
+            <td><a class="tk-row-title" href="<?= e(url('ticket.php?id=' . (int) $t['id'])) ?>">
                 <?= e($t['tipo'] === 'tarea' ? $t['titulo'] : $t['cliente']) ?></a>
-                <?= $t['tipo'] === 'tarea' ? '<span class="badge text-bg-light border">Tarea</span>' : '' ?></td>
+                <?= $t['tipo'] === 'tarea' ? chip('tarea', 'Tarea', true) : '' ?></td>
             <td><?= e($t['dni'] ?? '—') ?></td>
             <td><?= badge_estado($t['estado']) ?></td>
             <td><?= e((string) ($t['asignado_nombre'] ?? '—')) ?></td>

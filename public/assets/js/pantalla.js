@@ -4,6 +4,7 @@
     const $cols = document.getElementById('cols');
     const $act = document.getElementById('actualizado');
     const $sin = document.getElementById('sinconexion');
+    const $total = document.getElementById('total');
 
     let ultimo = null;          // JSON de la última lista dibujada
     let datos = [];
@@ -31,6 +32,12 @@
         return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' ' + hora(d);
     }
 
+    function iniciales(nombre) {
+        const p = String(nombre || '').trim().split(/\s+/).filter(Boolean);
+        if (p.length === 0 || nombre === 'Sin asignar') { return '?'; }
+        return p.slice(0, 2).map(function (x) { return x.charAt(0).toUpperCase(); }).join('');
+    }
+
     function el(tag, cls, txt) {
         const e = document.createElement(tag);
         if (cls) { e.className = cls; }
@@ -47,7 +54,7 @@
         const edad = el('span', 'edad', hace(t.creado));
         edad.dataset.creado = t.creado;
         m.appendChild(edad);
-        if (t.imagenes > 0) { m.appendChild(document.createTextNode(' · 📷')); }
+        if (t.imagenes > 0) { m.appendChild(document.createTextNode(' · ' + t.imagenes + (t.imagenes === 1 ? ' foto' : ' fotos'))); }
         c.appendChild(m);
 
         if (t.compromiso) {
@@ -91,8 +98,14 @@
         $cols.replaceChildren();
         $cols.classList.toggle('muchas', datos.length > 6);
 
+        const total = datos.reduce(function (n, c) { return n + c.tickets.length; }, 0);
+        if ($total) { $total.textContent = total === 1 ? '1 en curso' : total + ' en curso'; }
+
         if (datos.length === 0) {
-            $cols.appendChild(el('div', 'vacio', 'No hay tickets abiertos ✓'));
+            const v = el('div', 'vacio');
+            v.appendChild(el('b', '', '✓'));
+            v.appendChild(document.createTextNode('No hay tickets abiertos'));
+            $cols.appendChild(v);
             return;
         }
         const fragment = document.createDocumentFragment();
@@ -100,7 +113,10 @@
             const col = el('section', 'col');
             col.style.setProperty('--c', c.color);
             const h = el('h2');
-            h.appendChild(el('span', '', c.nombre));
+            const nom = el('span', 'nom');
+            nom.appendChild(el('span', 'ini', iniciales(c.nombre)));
+            nom.appendChild(el('span', '', c.nombre));
+            h.appendChild(nom);
             h.appendChild(el('span', 'n', String(c.tickets.length)));
             col.appendChild(h);
             const box = el('div', 'tarjetas');

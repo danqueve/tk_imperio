@@ -26,15 +26,15 @@ $asigSel = $v['asignado_a'] ?? ($u['rol'] === 'usuario' ? (string) $u['id'] : ''
 
 layout_inicio('Nuevo', 'ticket_nuevo.php', $u);
 ?>
-<h1 class="h4 mb-3">Nuevo</h1>
-<form method="post" enctype="multipart/form-data" id="form-nuevo" class="card card-body" style="max-width: 760px" novalidate>
+<div class="tk-head"><div><h1>Nuevo</h1><p>Cargá un ticket de un cliente o una tarea del día.</p></div></div>
+<form method="post" enctype="multipart/form-data" id="form-nuevo" class="card card-body gap-1" style="max-width: 820px" novalidate>
     <?= csrf_campo() ?>
 
-    <div class="btn-group mb-3" role="group">
+    <div class="tk-seg mb-3 align-self-start" role="group" aria-label="Tipo">
         <input type="radio" class="btn-check" name="tipo" id="t-ticket" value="ticket" <?= $tipo === 'ticket' ? 'checked' : '' ?>>
-        <label class="btn btn-outline-primary" for="t-ticket"><i class="bi bi-ticket-detailed"></i> Ticket</label>
+        <label for="t-ticket"><i class="bi bi-ticket-detailed" aria-hidden="true"></i> Ticket</label>
         <input type="radio" class="btn-check" name="tipo" id="t-tarea" value="tarea" <?= $tipo === 'tarea' ? 'checked' : '' ?>>
-        <label class="btn btn-outline-primary" for="t-tarea"><i class="bi bi-check2-square"></i> Tarea del día</label>
+        <label for="t-tarea"><i class="bi bi-check2-square" aria-hidden="true"></i> Tarea del día</label>
     </div>
 
     <section data-solo="ticket">
@@ -90,25 +90,25 @@ layout_inicio('Nuevo', 'ticket_nuevo.php', $u);
             </select>
         </div>
         <div class="col-12 col-md-6">
-            <label class="form-label d-block">Prioridad</label>
-            <div class="btn-group" role="group">
+            <span class="form-label d-block" id="lbl-prioridad">Prioridad</span>
+            <div class="tk-seg" role="group" aria-labelledby="lbl-prioridad">
                 <input type="radio" class="btn-check" name="prioridad" id="p-normal" value="normal" <?= ($v['prioridad'] ?? 'normal') !== 'alta' ? 'checked' : '' ?>>
-                <label class="btn btn-outline-secondary" for="p-normal">Normal</label>
-                <input type="radio" class="btn-check" name="prioridad" id="p-alta" value="alta" <?= ($v['prioridad'] ?? '') === 'alta' ? 'checked' : '' ?>>
-                <label class="btn btn-outline-danger" for="p-alta">Alta</label>
+                <label for="p-normal">Normal</label>
+                <input type="radio" class="btn-check alta" name="prioridad" id="p-alta" value="alta" <?= ($v['prioridad'] ?? '') === 'alta' ? 'checked' : '' ?>>
+                <label for="p-alta"><i class="bi bi-flag" aria-hidden="true"></i> Alta</label>
             </div>
         </div>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label" for="imagenes">Imágenes (hasta 3)</label>
+    <div class="mb-3 tk-drop">
+        <label class="form-label" for="imagenes"><i class="bi bi-camera" aria-hidden="true"></i> Imágenes (hasta 3)</label>
         <input class="form-control" type="file" id="imagenes" name="imagenes[]" accept="image/jpeg,image/png,image/webp" multiple>
         <div id="previas" class="d-flex gap-2 mt-2 flex-wrap"></div>
         <div class="form-text">Desde el celular podés sacar la foto o elegirla de la galería. Se reducen antes de subirlas.</div>
     </div>
 
-    <div>
-        <button class="btn btn-primary btn-lg" id="btn-enviar">Guardar</button>
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+        <button class="btn btn-primary btn-lg" id="btn-enviar"><i class="bi bi-check-lg" aria-hidden="true"></i> Guardar</button>
         <a class="btn btn-link" href="<?= e(url('bandeja.php')) ?>">Cancelar</a>
     </div>
 </form>

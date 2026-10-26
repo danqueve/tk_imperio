@@ -114,6 +114,6 @@ final class UsuarioService
     private function color(array $d): string
     {
         $c = (string) ($d['color'] ?? '');
-        return preg_match('/^#[0-9a-fA-F]{6}$/', $c) ? $c : '#0d6efd';
+        return preg_match('/^#[0-9a-fA-F]{6}$/', $c) ? $c : '#8B7CF6';
     }
 }

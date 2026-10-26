@@ -72,7 +72,7 @@ final class PantallaService
             $cols[$k] ??= [
                 'id'      => $k,
                 'nombre'  => $k === 0 ? 'Sin asignar' : $r['u_nombre'],
-                'color'   => $k === 0 ? '#6c757d' : $r['u_color'],
+                'color'   => $k === 0 ? '#9C98B5' : $r['u_color'],
                 'tickets' => [],
             ];
             $cols[$k]['tickets'][] = [
