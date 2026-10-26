@@ -23,6 +23,31 @@ function url(string $path = ''): string
     return rtrim((string) cfg('app', 'base_url'), '/') . '/' . ltrim($path, '/');
 }
 
+/** "hace 2 h" a partir de una fecha 'Y-m-d H:i:s'. */
+function hace(string $fecha): string
+{
+    $seg = max(0, time() - strtotime($fecha));
+    return match (true) {
+        $seg < 60     => 'hace un momento',
+        $seg < 3600   => 'hace ' . intdiv($seg, 60) . ' min',
+        $seg < 86400  => 'hace ' . intdiv($seg, 3600) . ' h',
+        default       => 'hace ' . intdiv($seg, 86400) . ' d',
+    };
+}
+
+const ESTADOS = [
+    'pendiente'  => ['Pendiente', 'warning'],
+    'en_proceso' => ['En proceso', 'primary'],
+    'resuelto'   => ['Resuelto', 'success'],
+    'anulado'    => ['Anulado', 'secondary'],
+];
+
+function badge_estado(string $estado): string
+{
+    [$txt, $color] = ESTADOS[$estado] ?? [$estado, 'secondary'];
+    return '<span class="badge text-bg-' . $color . '">' . e($txt) . '</span>';
+}
+
 function crear_pdo(array $c): PDO
 {
     $pdo = new PDO(
@@ -50,4 +75,12 @@ function sas(): PDO
 {
     static $pdo = null;
     return $pdo ??= crear_pdo(cfg('sas'));
+}
+
+function servicio_tickets(): TicketService
+{
+    require_once TK_ROOT . '/src/SasService.php';
+    require_once TK_ROOT . '/src/ImagenService.php';
+    require_once TK_ROOT . '/src/TicketService.php';
+    return new TicketService(db(), new ImagenService(db(), TK_ROOT . '/uploads'));
 }

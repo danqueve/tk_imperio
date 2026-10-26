@@ -233,7 +233,7 @@ Siete fases, cada una cerrada con un commit probado en WAMP64; la pantalla de pa
 
 - [x] **Fase 1 — Base del proyecto.** Repo clonado en `C:\wamp64\www\tk`, `.gitignore`, `config.local.php` (con las dos conexiones: TK y SAS solo lectura), `sql/schema.sql`, layout responsive (barra superior en PC, barra inferior en celular).
 - [x] **Fase 2 — Login y usuarios.** Auth por sesión, login de admins con su cuenta de SAS Imperio (conexión de solo lectura), CSRF, roles, panel de usuarios para el admin, usuario admin inicial por script.
-- [ ] **Fase 3 — Tickets y tareas.** Formulario de carga con búsqueda del cliente por DNI en SAS, compromiso para las tareas, opción sin asignar y hasta 3 imágenes (reducidas en el navegador), detalle, bandeja del supervisor y bandeja del usuario.
+- [x] **Fase 3 — Tickets y tareas.** Formulario de carga con búsqueda del cliente por DNI en SAS, compromiso para las tareas, opción sin asignar y hasta 3 imágenes (reducidas en el navegador), detalle, bandeja del supervisor y bandeja del usuario.
 - [ ] **Fase 4 — Flujo de estados.** Tomar, resolver con nota obligatoria, reasignar, anular; cada acción escribe en `tk_ticket_eventos`.
 - [ ] **Fase 5 — Pantalla principal.** Endpoint JSON, vista de TV por columnas, autorefresco cada 5 min, token de acceso.
 - [ ] **Fase 6 — Historial y reportes.** Búsqueda por DNI o cliente, filtros por fecha y usuario, exportar CSV, tiempo promedio de resolución por usuario.
