@@ -9,6 +9,8 @@ function sesion_iniciar(): void
     if (session_status() === PHP_SESSION_ACTIVE) {
         return;
     }
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
     session_name('tk_sess');
     session_set_cookie_params([
         'lifetime' => 0,
@@ -111,6 +113,8 @@ function login_bloqueado(string $usuario): bool
 
 function login_registrar_fallo(string $usuario): void
 {
+    db()->exec('DELETE FROM tk_login_intentos WHERE creado_en < (NOW() - INTERVAL 1 DAY)');
+    $usuario = mb_substr($usuario, 0, 60);
     db()->prepare('INSERT INTO tk_login_intentos (usuario, ip) VALUES (?, ?)')
         ->execute([$usuario, ip_cliente()]);
 }
