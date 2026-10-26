@@ -236,7 +236,7 @@ Siete fases, cada una cerrada con un commit probado en WAMP64; la pantalla de pa
 - [x] **Fase 3 — Tickets y tareas.** Formulario de carga con búsqueda del cliente por DNI en SAS, compromiso para las tareas, opción sin asignar y hasta 3 imágenes (reducidas en el navegador), detalle, bandeja del supervisor y bandeja del usuario.
 - [x] **Fase 4 — Flujo de estados.** Tomar, resolver con nota obligatoria, reasignar, anular; cada acción escribe en `tk_ticket_eventos`.
 - [x] **Fase 5 — Pantalla principal.** Endpoint JSON, vista de TV por columnas, autorefresco cada 5 min, token de acceso.
-- [ ] **Fase 6 — Historial y reportes.** Búsqueda por DNI o cliente, filtros por fecha y usuario, exportar CSV, tiempo promedio de resolución por usuario.
+- [x] **Fase 6 — Historial y reportes.** Búsqueda por DNI o cliente, filtros por fecha y usuario, exportar CSV, tiempo promedio de resolución por usuario.
 - [ ] **Fase 7 — Deploy.** Subdominio en el VPS, regla en `.htaccess`, base en producción, usuario MySQL de solo lectura sobre SAS, backup en rclone, prueba en la TV real y en celulares.
 
 ---

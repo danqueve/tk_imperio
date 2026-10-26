@@ -5,7 +5,7 @@ declare(strict_types=1);
 const NAV_ITEMS = [
     ['bandeja.php',      'Bandeja',   'bi-inbox',         ['admin', 'supervisor', 'usuario']],
     ['ticket_nuevo.php', 'Nuevo',     'bi-plus-circle',   ['admin', 'supervisor', 'usuario']],
-    ['historial.php',    'Historial', 'bi-clock-history', ['admin', 'supervisor']],
+    ['historial.php',    'Historial', 'bi-clock-history', ['admin', 'supervisor', 'usuario']],
     ['usuarios.php',     'Usuarios',  'bi-people',        ['admin']],
     ['configuracion.php', 'Pantalla', 'bi-tv',            ['admin']],
 ];
