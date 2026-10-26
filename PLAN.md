@@ -237,7 +237,7 @@ Siete fases, cada una cerrada con un commit probado en WAMP64; la pantalla de pa
 - [x] **Fase 4 — Flujo de estados.** Tomar, resolver con nota obligatoria, reasignar, anular; cada acción escribe en `tk_ticket_eventos`.
 - [x] **Fase 5 — Pantalla principal.** Endpoint JSON, vista de TV por columnas, autorefresco cada 5 min, token de acceso.
 - [x] **Fase 6 — Historial y reportes.** Búsqueda por DNI o cliente, filtros por fecha y usuario, exportar CSV, tiempo promedio de resolución por usuario.
-- [x] **Fase 7 — Deploy.** Subdominio en el VPS, regla en `.htaccess`, base en producción, usuario MySQL de solo lectura sobre SAS, backup en rclone, prueba en la TV real y en celulares.
+- [ ] **Fase 7 — Deploy (archivos listos; falta ejecutarlo en el VPS siguiendo DEPLOY.md).** Subdominio en el VPS, regla en `.htaccess`, base en producción, usuario MySQL de solo lectura sobre SAS, backup en rclone, prueba en la TV real y en celulares.
 
 ---
 
