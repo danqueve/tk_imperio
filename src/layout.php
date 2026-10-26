@@ -7,6 +7,7 @@ const NAV_ITEMS = [
     ['ticket_nuevo.php', 'Nuevo',     'bi-plus-circle',   ['admin', 'supervisor', 'usuario']],
     ['historial.php',    'Historial', 'bi-clock-history', ['admin', 'supervisor']],
     ['usuarios.php',     'Usuarios',  'bi-people',        ['admin']],
+    ['configuracion.php', 'Pantalla', 'bi-tv',            ['admin']],
 ];
 
 function nav_visible(?array $u): array

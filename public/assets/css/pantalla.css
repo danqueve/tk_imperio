@@ -1,0 +1,64 @@
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+    display: flex; flex-direction: column;
+    background: #10161d; color: #e9eef3;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: clamp(14px, 1.1vw, 22px);
+}
+#cab {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    padding: .6rem 1.2rem; background: #0a0f14; border-bottom: 1px solid #263340;
+}
+#cab h1 { margin: 0; font-size: 1.4em; font-weight: 600; }
+#estado { display: flex; align-items: center; gap: 1rem; color: #9fb0c0; }
+#sinconexion { background: #b02a37; color: #fff; padding: .15em .6em; border-radius: .4em; font-weight: 600; }
+#pantalla-completa {
+    background: transparent; color: inherit; border: 1px solid #3a4a5a; border-radius: .4em;
+    font-size: 1.1em; padding: .1em .5em; cursor: pointer;
+}
+
+#cols {
+    flex: 1; min-height: 0; display: flex; gap: .8rem; padding: .8rem;
+    overflow-x: auto; scroll-snap-type: x mandatory;
+}
+.col {
+    flex: 1 1 0; min-width: 16em; display: flex; flex-direction: column; min-height: 0;
+    background: #17202a; border-radius: .6em; border-top: .35em solid var(--c, #6c757d);
+    scroll-snap-align: start;
+}
+.col h2 {
+    margin: 0; padding: .6em .8em; font-size: 1.1em; display: flex; justify-content: space-between; gap: .5em;
+}
+.col h2 .n { background: #263340; border-radius: 1em; padding: 0 .6em; }
+.tarjetas { flex: 1; min-height: 0; overflow: hidden; padding: 0 .6em .6em; display: flex; flex-direction: column; gap: .5em; }
+
+.card {
+    background: #1f2b38; border-radius: .5em; padding: .6em .75em; border: 2px solid transparent;
+    flex: none;
+}
+.card.proceso { background: #17365c; }
+.card.alta { border-color: #e5484d; }
+.card.nueva { animation: resaltar 4s ease-out; }
+.card .t { font-weight: 600; font-size: 1.05em; overflow-wrap: anywhere; }
+.card .m { color: #9fb0c0; font-size: .85em; margin-top: .15em; }
+.card .tags { display: flex; flex-wrap: wrap; gap: .3em; margin-top: .3em; }
+.tag { font-size: .72em; font-weight: 700; padding: .1em .5em; border-radius: .3em; background: #263340; }
+.tag.proceso { background: #2f6fb5; }
+.tag.alta { background: #e5484d; }
+.tag.tarea { background: #6f42c1; }
+.card .venc { color: #ff7b80; font-weight: 700; }
+.mas { text-align: center; color: #9fb0c0; font-weight: 700; padding: .3em; }
+.vacio { margin: auto; color: #6b7c8c; font-size: 1.4em; }
+
+/* Muchos usuarios: columnas más angostas y letra un paso más chica */
+#cols.muchas { font-size: calc(clamp(14px, 1.1vw, 22px) * .88); }
+#cols.muchas .col { min-width: 11em; }
+
+@keyframes resaltar { 0% { box-shadow: 0 0 0 4px #ffd43b; background: #4a4020; } 100% { box-shadow: none; } }
+
+@media (max-width: 700px) {
+    #cab { flex-direction: column; align-items: flex-start; gap: .3rem; }
+    .col { min-width: 85vw; }
+    .tarjetas { overflow-y: auto; }
+}
