@@ -7,6 +7,10 @@ $GLOBALS['tk_config'] = require TK_ROOT . '/config/config.php';
 
 date_default_timezone_set('America/Argentina/Tucuman');
 
+error_reporting(E_ALL);
+ini_set('display_errors', !empty($GLOBALS['tk_config']['app']['debug']) ? '1' : '0');
+ini_set('log_errors', '1');
+
 function cfg(string $seccion, ?string $clave = null): mixed
 {
     $c = $GLOBALS['tk_config'][$seccion] ?? [];

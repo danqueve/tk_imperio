@@ -1,0 +1,23 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Carpetas internas: nunca por web (config, código, SQL, scripts, imágenes subidas).
+RewriteRule ^(config|src|sql|scripts|uploads|\.git)(/|$) - [F,L]
+
+# Subdominio de producción: siempre HTTPS.
+RewriteCond %{HTTP_HOST} ^tk\.imperiocomercial\.com\.ar$ [NC]
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Subdominio de producción: se sirve únicamente public/.
+RewriteCond %{HTTP_HOST} ^tk\.imperiocomercial\.com\.ar$ [NC]
+RewriteRule ^(?!public/)(.*)$ public/$1 [L]
+</IfModule>
+
+# Archivos que nunca deben bajarse.
+<FilesMatch "(^\.git|\.(md|sql|log|sh|lock)$|\.example\.php$)">
+    Require all denied
+</FilesMatch>
